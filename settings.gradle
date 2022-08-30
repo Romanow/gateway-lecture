@@ -1,0 +1,4 @@
+rootProject.name = "gateway"
+
+include "gateway"
+include "dictionary"

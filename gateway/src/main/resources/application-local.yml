@@ -1,0 +1,7 @@
+application:
+  routes:
+    dictionary: http://localhost:8080
+
+logging:
+  level:
+    org.springframework.cloud.gateway.filter.factory.RetryGatewayFilterFactory: trace
