@@ -9,6 +9,7 @@ ext {
     springBootVersion = "2.7.3"
     springCloudVersion = "2021.0.3"
     springCloudSecurityVersion = "2.2.4.RELEASE"
+    bucket4jVersion = "7.6.0"
     jetbrainsAnnotationsVersion = "22.0.0"
 }
 

@@ -19,11 +19,16 @@
     1. Route Predicate как способ настроить гибкие правила проксирования (а еще как мы еще проверяем запрос на
        соответствие OpenAPI);
     2. Gateway Filter Factory как средство модификации запросов.
-        * `AddRequestHeaderGatewayFilter` – добавляем заголовки;
-        * `RequestRateLimiterGatewayFilter` – как средство контролировать количество запросов;
-        * `StripPrefixGatewayfactory` и `RewritePathGatewayFilter` – модифицируем path;
-        * `RetryGatewayFilter` – реализуем retry запросов;
-        * `ModifyRequestBodyGatewayFilter`, `ModifyResponseBodyGatewayFilter` – модифицируем запросы и ответы.
-          Разберемся как добраться до "тела" запроса и каике с этим связаны проблемы.
+        * `AddRequestHeaderGatewayFilterFactory` – добавляем заголовки;
+        * `RequestRateLimiterGatewayFilterFactory` – как средство контролировать количество запросов;
+        * `StripPrefixGatewayFactory` и `PrefixPathGatewayFilterFactory` – модифицируем path;
+        * `RetryGatewayFilterFactory` – реализуем retry запросов;
+        * `ModifyRequestBodyGatewayFilterFactory`, `ModifyResponseBodyGatewayFilterFactory` – модифицируем запросы и
+          ответы. Разберемся как добраться до "тела" запроса и каике с этим связаны проблемы.
     3. Задаем таймауты запросов.
 4. Подключаем Spring Cloud Security для защиты наших endpoints.
+
+## Ссылки
+
+1. [Spring Cloud Gateway](https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html)
+2. [Bucket4j Rate Limiter](https://github.com/bucket4j/bucket4j)
