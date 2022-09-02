@@ -9,8 +9,11 @@ ext {
     springBootVersion = "2.7.3"
     springCloudVersion = "2021.0.3"
     springCloudSecurityVersion = "2.2.4.RELEASE"
+    openApiVersion = "1.6.11"
+    mapstructVersion = "1.5.2.Final"
     bucket4jVersion = "7.6.0"
     jetbrainsAnnotationsVersion = "22.0.0"
+    postgresContainerVersion = "1.17.3"
 }
 
 subprojects {

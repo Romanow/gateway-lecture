@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/dictionary
+  jpa:
+    generate-ddl: true
+    hibernate.ddl-auto: validate
