@@ -16,10 +16,9 @@ ext {
     postgresContainerVersion = "1.17.3"
 }
 
-subprojects {
+allprojects {
     apply plugin: "idea"
     apply plugin: "java-library"
-    apply plugin: "org.springframework.boot"
     apply plugin: "io.spring.dependency-management"
 
     sourceCompatibility = "11"
@@ -47,10 +46,6 @@ subprojects {
         compileOnly "org.projectlombok:lombok"
         annotationProcessor "org.projectlombok:lombok"
         implementation "org.jetbrains:annotations:$jetbrainsAnnotationsVersion"
-    }
-
-    bootJar {
-        archiveFileName = "${rootProject.name}.jar"
     }
 
     test {
