@@ -3,3 +3,23 @@ server:
 spring:
   profiles:
     active: local
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PATCH
+              - PUT
+              - DELETE
+
+management:
+  endpoints:
+    web:
+      base-path: /manage
+      exposure:
+        include: info,health,loggers,gateway
+

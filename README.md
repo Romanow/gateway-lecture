@@ -19,14 +19,28 @@
     1. Route Predicate как способ настроить гибкие правила проксирования (а еще как мы еще проверяем запрос на
        соответствие OpenAPI);
     2. Gateway Filter Factory как средство модификации запросов.
+        * `StripPrefixGatewayFactory` и `PrefixPathGatewayFilterFactory` – модифицируем path;
         * `AddRequestHeaderGatewayFilterFactory` – добавляем заголовки;
         * `RequestRateLimiterGatewayFilterFactory` – как средство контролировать количество запросов;
-        * `StripPrefixGatewayFactory` и `PrefixPathGatewayFilterFactory` – модифицируем path;
         * `RetryGatewayFilterFactory` – реализуем retry запросов;
-        * `ModifyRequestBodyGatewayFilterFactory`, `ModifyResponseBodyGatewayFilterFactory` – модифицируем запросы и
-          ответы. Разберемся как добраться до "тела" запроса и каике с этим связаны проблемы.
+        * `ModifyResponseBodyGatewayFilterFactory` – модифицируем ответ. Разберемся как добраться до "тела" запроса и
+          каике с этим связаны проблемы.
     3. Задаем таймауты запросов.
 4. Подключаем Spring Cloud Security для защиты наших endpoints.
+
+## Реализация
+
+```shell
+$ curl http://localhost:8000/manage/gateway/routes | jq
+```
+
+Check CORS:
+```shell
+$ curl -X OPTIONS \
+  -H 'Access-Control-Request-Method: GET' \
+  -H "Origin: http://localhost" \
+  http://localhost:8000/dict/v1/lego-sets/ -v
+```
 
 ## Ссылки
 
