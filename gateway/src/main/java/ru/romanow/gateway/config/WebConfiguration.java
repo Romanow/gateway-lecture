@@ -3,6 +3,8 @@ package ru.romanow.gateway.config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
+import org.springframework.cloud.gateway.filter.ratelimit.RateLimiter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -13,12 +15,15 @@ import ru.romanow.gateway.config.properties.RoutesProperties;
 import ru.romanow.gateway.models.LegoSet;
 import ru.romanow.gateway.models.LegoSetWithSeries;
 import ru.romanow.gateway.models.Series;
+import ru.romanow.gateway.utils.InMemoryRateLimiter;
 
+import static java.time.Duration.ofSeconds;
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static reactor.core.publisher.Mono.just;
 
 @Configuration
 @EnableConfigurationProperties({
@@ -35,10 +40,26 @@ public class WebConfiguration {
                         .path("/dict/**")
                         .filters(filterSpec -> filterSpec
                                 .addRequestHeader("X-Gateway-Timestamp", ISO_DATE_TIME.format(now()))
+                                .requestRateLimiter(rateLimiterConfig -> rateLimiterConfig
+                                        .setRateLimiter(rateLimiter())
+                                        .setKeyResolver(keyResolver()))
                                 .stripPrefix(1)
                                 .prefixPath("/api"))
                         .uri(routes.getDictionary()))
                 .build();
+    }
+
+    @Bean
+    public RateLimiter<InMemoryRateLimiter.Config> rateLimiter() {
+        return new InMemoryRateLimiter(1, 2, ofSeconds(10));
+    }
+
+    @Bean
+    public KeyResolver keyResolver() {
+        return exchange -> just(exchange.getRequest()
+                                        .getRemoteAddress()
+                                        .getAddress()
+                                        .getHostAddress());
     }
 
     @Bean
