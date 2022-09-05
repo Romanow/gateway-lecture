@@ -8,6 +8,7 @@ import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.cloud.gateway.filter.ratelimit.RateLimiter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+import org.springframework.cloud.gateway.support.RouteMetadataUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -70,6 +71,7 @@ public class WebConfiguration {
                                         .setBackoff(ofSeconds(1), ofSeconds(10), 2, false))
                                 .stripPrefix(1)
                                 .prefixPath("/api"))
+                        .metadata(RouteMetadataUtils.RESPONSE_TIMEOUT_ATTR, 2000)
                         .uri(routes.getDictionary()))
                 .build();
     }
