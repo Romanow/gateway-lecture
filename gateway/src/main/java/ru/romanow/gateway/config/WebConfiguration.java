@@ -3,6 +3,7 @@ package ru.romanow.gateway.config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.gateway.filter.factory.rewrite.RewriteFunction;
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.cloud.gateway.filter.ratelimit.RateLimiter;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -37,6 +38,24 @@ public class WebConfiguration {
     public RouteLocator routers(RouteLocatorBuilder builder, RoutesProperties routes) {
         return builder
                 .routes()
+                .route("dictionary-lego-sets", pathSpec -> pathSpec
+                        .path("/dict/v1/lego-sets/{id}")
+                        .filters(filterSpec -> filterSpec
+                                .addRequestHeader("X-Gateway-Timestamp", ISO_DATE_TIME.format(now()))
+                                .requestRateLimiter(rateLimiterConfig -> rateLimiterConfig
+                                        .setRateLimiter(rateLimiter())
+                                        .setKeyResolver(keyResolver()))
+                                .retry(retryConfig -> retryConfig
+                                        .setRetries(3)
+                                        .setStatuses(HttpStatus.NOT_FOUND)
+                                        .setSeries(HttpStatus.Series.SERVER_ERROR)
+                                        .setBackoff(ofSeconds(1), ofSeconds(10), 2, false))
+                                .modifyResponseBody(LegoSet.class,
+                                                    LegoSetWithSeries.class,
+                                                    responseRewriteFunction(routes))
+                                .stripPrefix(1)
+                                .prefixPath("/api"))
+                        .uri(routes.getDictionary()))
                 .route("dictionary", pathSpec -> pathSpec
                         .path("/dict/**")
                         .filters(filterSpec -> filterSpec
@@ -75,6 +94,18 @@ public class WebConfiguration {
                 .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
                 .build();
+    }
+
+    @Bean
+    public RewriteFunction<LegoSet, LegoSetWithSeries> responseRewriteFunction(RoutesProperties routes) {
+        return (exchange, legoSet) -> webClient()
+                .get()
+                .uri(routes.getDictionary(), uriBuilder -> uriBuilder
+                        .path("/api/v1/series/{series}")
+                        .build(legoSet.getSeriesName()))
+                .retrieve()
+                .bodyToMono(Series.class)
+                .map(series -> buildLegoWithSeries(legoSet, series));
     }
 
     @NotNull
