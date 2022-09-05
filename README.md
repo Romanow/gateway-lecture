@@ -1,7 +1,6 @@
 # Как нам Spring Cloud Gateway жить помогает
 
 ![Build Workflow](https://github.com/Romanow/gateway-lecture/workflows/Build%20project/badge.svg?branch=master)
-![GitHub Super-Linter](https://github.com/Romanow/gateway-lecture/workflows/Lint%20Code%20Base/badge.svg?branch=master)
 
 ## Аннотация
 
