@@ -14,6 +14,8 @@ import ru.romanow.gateway.models.LegoSet;
 import ru.romanow.gateway.models.LegoSetWithSeries;
 import ru.romanow.gateway.models.Series;
 
+import static java.time.LocalDateTime.now;
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -27,7 +29,16 @@ public class WebConfiguration {
 
     @Bean
     public RouteLocator routers(RouteLocatorBuilder builder, RoutesProperties routes) {
-        return builder.routes().build();
+        return builder
+                .routes()
+                .route("dictionary", pathSpec -> pathSpec
+                        .path("/dict/**")
+                        .filters(filterSpec -> filterSpec
+                                .addRequestHeader("X-Gateway-Timestamp", ISO_DATE_TIME.format(now()))
+                                .stripPrefix(1)
+                                .prefixPath("/api"))
+                        .uri(routes.getDictionary()))
+                .build();
     }
 
     @Bean
