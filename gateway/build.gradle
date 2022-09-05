@@ -14,6 +14,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-logging"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
+    developmentOnly "org.springframework.boot:spring-boot-devtools"
+
     implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:$bucket4jVersion"
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
