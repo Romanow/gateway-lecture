@@ -9,6 +9,7 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.romanow.gateway.config.properties.ApplicationProperties;
 import ru.romanow.gateway.config.properties.RoutesProperties;
@@ -43,6 +44,11 @@ public class WebConfiguration {
                                 .requestRateLimiter(rateLimiterConfig -> rateLimiterConfig
                                         .setRateLimiter(rateLimiter())
                                         .setKeyResolver(keyResolver()))
+                                .retry(retryConfig -> retryConfig
+                                        .setRetries(3)
+                                        .setStatuses(HttpStatus.NOT_FOUND)
+                                        .setSeries(HttpStatus.Series.SERVER_ERROR)
+                                        .setBackoff(ofSeconds(1), ofSeconds(10), 2, false))
                                 .stripPrefix(1)
                                 .prefixPath("/api"))
                         .uri(routes.getDictionary()))
