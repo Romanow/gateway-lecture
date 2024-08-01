@@ -16,11 +16,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:$bucket4jVersion"
 
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
-
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    kapt "org.springframework.boot:spring-boot-configuration-processor"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 }

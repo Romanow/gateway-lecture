@@ -17,9 +17,7 @@ dependencies {
     implementation "org.springdoc:springdoc-openapi-starter-common:$openApiVersion"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$openApiVersion"
 
-    implementation "org.mapstruct:mapstruct:$mapstructVersion"
-    annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    kapt "org.springframework.boot:spring-boot-configuration-processor"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.testcontainers:postgresql:$postgresContainerVersion"

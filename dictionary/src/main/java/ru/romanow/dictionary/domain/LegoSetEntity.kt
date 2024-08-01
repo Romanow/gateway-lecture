@@ -1,9 +1,6 @@
 package ru.romanow.dictionary.domain
 
 import jakarta.persistence.*
-import org.apache.commons.lang3.builder.EqualsBuilder
-import org.apache.commons.lang3.builder.HashCodeBuilder
-import org.apache.commons.lang3.builder.ToStringBuilder
 import java.math.BigDecimal
 
 @Entity
@@ -12,7 +9,7 @@ data class LegoSetEntity(
 
     @Id
     @Column(name = "number", length = 20, nullable = false, updatable = false, unique = true)
-    override var id: String? = null,
+    var number: String? = null,
 
     @Column(name = "name", length = 120, nullable = false)
     var name: String? = null,
@@ -32,4 +29,6 @@ data class LegoSetEntity(
     @ManyToOne
     @JoinColumn(name = "series_id", nullable = false, foreignKey = ForeignKey(name = "fk_lego_set_series_id"))
     var series: SeriesEntity? = null
-) : Identity<String?>
+) : Identity<String?> {
+    override fun getId() = number
+}

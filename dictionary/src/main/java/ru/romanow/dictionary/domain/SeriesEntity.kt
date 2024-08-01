@@ -1,9 +1,6 @@
 package ru.romanow.dictionary.domain
 
 import jakarta.persistence.*
-import org.apache.commons.lang3.builder.EqualsBuilder
-import org.apache.commons.lang3.builder.HashCodeBuilder
-import org.apache.commons.lang3.builder.ToStringBuilder
 import ru.romanow.dictionary.domain.enums.SeriesComplexity
 import ru.romanow.dictionary.domain.enums.SeriesType
 
@@ -13,7 +10,7 @@ data class SeriesEntity(
 
     @Id
     @Column(name = "name", length = 80, nullable = false, updatable = false, unique = true)
-    override val id: String? = null,
+    var name: String? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
@@ -28,4 +25,6 @@ data class SeriesEntity(
 
     @OneToMany(mappedBy = "series")
     var sets: Set<LegoSetEntity>? = null
-) : Identity<String?>
+) : Identity<String?> {
+    override fun getId() = name
+}
