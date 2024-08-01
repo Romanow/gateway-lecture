@@ -1,5 +1,8 @@
 plugins {
     id "org.springframework.boot"
+    id "org.jetbrains.kotlin.plugin.jpa"
+    id "org.jetbrains.kotlin.plugin.spring"
+    id "com.gorylenko.gradle-git-properties"
 }
 
 dependencies {
@@ -11,8 +14,8 @@ dependencies {
     implementation "org.flywaydb:flyway-core"
     implementation "org.postgresql:postgresql"
 
-    implementation "org.springdoc:springdoc-openapi-webmvc-core:$openApiVersion"
-    implementation "org.springdoc:springdoc-openapi-ui:$openApiVersion"
+    implementation "org.springdoc:springdoc-openapi-starter-common:$openApiVersion"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$openApiVersion"
 
     implementation "org.mapstruct:mapstruct:$mapstructVersion"
     annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
@@ -21,6 +24,14 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.testcontainers:postgresql:$postgresContainerVersion"
 }
+
+gitProperties {
+    dateFormat = "dd.MM.yyyy HH:mm:ss"
+    dateFormatTimeZone = "Europe/Moscow"
+    extProperty = "gitProps"
+}
+
+generateGitProperties.outputs.upToDateWhen { false }
 
 bootJar {
     archiveFileName = "${rootProject.name}.jar"

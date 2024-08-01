@@ -1,8 +1,5 @@
-package ru.romanow.dictionary.models;
+package ru.romanow.dictionary.models
 
-import lombok.Data;
-
-@Data
-public class ErrorResponse {
-    private final String message;
-}
+data class ErrorResponse(
+    var message: String? = null
+)

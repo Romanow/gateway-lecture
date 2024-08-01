@@ -1,18 +1,12 @@
-package ru.romanow.dictionary.models;
+package ru.romanow.dictionary.models
 
-import java.math.BigDecimal;
-import lombok.Data;
-import lombok.experimental.Accessors;
+import java.math.BigDecimal
 
-@Data
-@Accessors(chain = true)
-public class LegoSet {
-
-    private String number;
-    private String name;
-    private Integer age;
-    private Integer partsCount;
-    private BigDecimal suggestedPrice;
-    private String seriesName;
-
-}
+data class LegoSet(
+    var number: String? = null,
+    var name: String? = null,
+    var age: Int? = null,
+    var partsCount: Int? = null,
+    var suggestedPrice: BigDecimal? = null,
+    var seriesName: String? = null
+)

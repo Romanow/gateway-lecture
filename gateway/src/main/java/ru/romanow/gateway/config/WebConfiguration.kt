@@ -1,125 +1,154 @@
-package ru.romanow.gateway.config;
+package ru.romanow.gateway.config
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.gateway.config.GlobalCorsProperties;
-import org.springframework.cloud.gateway.filter.factory.rewrite.RewriteFunction;
-import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
-import org.springframework.cloud.gateway.filter.ratelimit.RateLimiter;
-import org.springframework.cloud.gateway.route.RouteLocator;
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
-import org.springframework.cloud.gateway.support.RouteMetadataUtils;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.reactive.function.client.WebClient;
-import ru.romanow.gateway.config.properties.ApplicationProperties;
-import ru.romanow.gateway.config.properties.RoutesProperties;
-import ru.romanow.gateway.models.LegoSet;
-import ru.romanow.gateway.models.LegoSetWithSeries;
-import ru.romanow.gateway.models.Series;
-import ru.romanow.gateway.utils.InMemoryRateLimiter;
-
-import static java.time.Duration.ofSeconds;
-import static java.time.LocalDateTime.now;
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
-import static org.springframework.http.HttpHeaders.ACCEPT;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static reactor.core.publisher.Mono.just;
+import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.cloud.gateway.filter.factory.RequestRateLimiterGatewayFilterFactory
+import org.springframework.cloud.gateway.filter.factory.RetryGatewayFilterFactory.RetryConfig
+import org.springframework.cloud.gateway.filter.factory.rewrite.RewriteFunction
+import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver
+import org.springframework.cloud.gateway.filter.ratelimit.RateLimiter
+import org.springframework.cloud.gateway.route.Route
+import org.springframework.cloud.gateway.route.RouteLocator
+import org.springframework.cloud.gateway.route.builder.Buildable
+import org.springframework.cloud.gateway.route.builder.GatewayFilterSpec
+import org.springframework.cloud.gateway.route.builder.PredicateSpec
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder
+import org.springframework.cloud.gateway.support.RouteMetadataUtils
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.server.ServerWebExchange
+import org.springframework.web.util.UriBuilder
+import reactor.core.publisher.Mono
+import ru.romanow.gateway.config.properties.ApplicationProperties
+import ru.romanow.gateway.config.properties.RoutesProperties
+import ru.romanow.gateway.models.LegoSet
+import ru.romanow.gateway.models.LegoSetWithSeries
+import ru.romanow.gateway.models.Series
+import ru.romanow.gateway.utils.InMemoryRateLimiter
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.function.Function
 
 @Configuration
-@EnableConfigurationProperties({
-        ApplicationProperties.class,
-        RoutesProperties.class
-})
-public class WebConfiguration {
+@EnableConfigurationProperties(ApplicationProperties::class)
+class WebConfiguration {
 
-    @Bean
-    public RouteLocator routers(RouteLocatorBuilder builder, RoutesProperties routes) {
-        return builder
-                .routes()
-                .route("dictionary-lego-sets", pathSpec -> pathSpec
-                        .path("/dict/v1/lego-sets/{id}")
-                        .filters(filterSpec -> filterSpec
-                                .addRequestHeader("X-Gateway-Timestamp", ISO_DATE_TIME.format(now()))
-                                .requestRateLimiter(rateLimiterConfig -> rateLimiterConfig
-                                        .setRateLimiter(rateLimiter())
-                                        .setKeyResolver(keyResolver()))
-                                .retry(retryConfig -> retryConfig
-                                        .setRetries(3)
-                                        .setStatuses(HttpStatus.NOT_FOUND)
-                                        .setSeries(HttpStatus.Series.SERVER_ERROR)
-                                        .setBackoff(ofSeconds(1), ofSeconds(10), 2, false))
-                                .modifyResponseBody(LegoSet.class,
-                                                    LegoSetWithSeries.class,
-                                                    responseRewriteFunction(routes))
-                                .stripPrefix(1)
-                                .prefixPath("/api"))
-                        .uri(routes.getDictionary()))
-                .route("dictionary", pathSpec -> pathSpec
-                        .path("/dict/**")
-                        .filters(filterSpec -> filterSpec
-                                .addRequestHeader("X-Gateway-Timestamp", ISO_DATE_TIME.format(now()))
-                                .requestRateLimiter(rateLimiterConfig -> rateLimiterConfig
-                                        .setRateLimiter(rateLimiter())
-                                        .setKeyResolver(keyResolver()))
-                                .retry(retryConfig -> retryConfig
-                                        .setRetries(3)
-                                        .setStatuses(HttpStatus.NOT_FOUND)
-                                        .setSeries(HttpStatus.Series.SERVER_ERROR)
-                                        .setBackoff(ofSeconds(1), ofSeconds(10), 2, false))
-                                .stripPrefix(1)
-                                .prefixPath("/api"))
-                        .metadata(RouteMetadataUtils.RESPONSE_TIMEOUT_ATTR, 2000)
-                        .uri(routes.getDictionary()))
-                .build();
-    }
+//    @Bean
+//    fun routers(builder: RouteLocatorBuilder, routes: RoutesProperties): RouteLocator {
+//        return builder
+//            .routes()
+//            .route("dictionary-lego-sets", Function<PredicateSpec, Buildable<Route>> { pathSpec: PredicateSpec ->
+//                pathSpec
+//                    .path("/dict/v1/lego-sets/{id}")
+//                    .filters { filterSpec: GatewayFilterSpec ->
+//                        filterSpec
+//                            .addRequestHeader(
+//                                "X-Gateway-Timestamp",
+//                                DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now())
+//                            )
+//                            .requestRateLimiter { rateLimiterConfig: RequestRateLimiterGatewayFilterFactory.Config ->
+//                                rateLimiterConfig
+//                                    .setRateLimiter(rateLimiter()).keyResolver = keyResolver()
+//                            }
+//                            .retry { retryConfig: RetryConfig ->
+//                                retryConfig
+//                                    .setRetries(3)
+//                                    .setStatuses(HttpStatus.NOT_FOUND)
+//                                    .setSeries(HttpStatus.Series.SERVER_ERROR)
+//                                    .setBackoff(Duration.ofSeconds(1), Duration.ofSeconds(10), 2, false)
+//                            }
+//                            .modifyResponseBody<LegoSet, LegoSetWithSeries>(
+//                                LegoSet::class.java,
+//                                LegoSetWithSeries::class.java,
+//                                responseRewriteFunction(routes)
+//                            )
+//                            .stripPrefix(1)
+//                            .prefixPath("/api")
+//                    }
+//                    .uri(routes.getDictionary())
+//            })
+//            .route("dictionary", Function<PredicateSpec, Buildable<Route>> { pathSpec: PredicateSpec ->
+//                pathSpec
+//                    .path("/dict/**")
+//                    .filters { filterSpec: GatewayFilterSpec ->
+//                        filterSpec
+//                            .addRequestHeader(
+//                                "X-Gateway-Timestamp",
+//                                DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now())
+//                            )
+//                            .requestRateLimiter { rateLimiterConfig: RequestRateLimiterGatewayFilterFactory.Config ->
+//                                rateLimiterConfig
+//                                    .setRateLimiter(rateLimiter()).keyResolver = keyResolver()
+//                            }
+//                            .retry { retryConfig: RetryConfig ->
+//                                retryConfig
+//                                    .setRetries(3)
+//                                    .setStatuses(HttpStatus.NOT_FOUND)
+//                                    .setSeries(HttpStatus.Series.SERVER_ERROR)
+//                                    .setBackoff(Duration.ofSeconds(1), Duration.ofSeconds(10), 2, false)
+//                            }
+//                            .stripPrefix(1)
+//                            .prefixPath("/api")
+//                    }
+//                    .metadata(RouteMetadataUtils.RESPONSE_TIMEOUT_ATTR, 2000)
+//                    .uri(routes.getDictionary())
+//            })
+//            .build()
+//    }
 
-    @Bean
-    public RateLimiter<InMemoryRateLimiter.Config> rateLimiter() {
-        return new InMemoryRateLimiter(1, 2, ofSeconds(10));
-    }
+//    @Bean
+//    fun rateLimiter(): RateLimiter<InMemoryRateLimiter.Config> {
+//        return InMemoryRateLimiter(1, 2, Duration.ofSeconds(10))
+//    }
 
-    @Bean
-    public KeyResolver keyResolver() {
-        return exchange -> just(exchange.getRequest()
-                                        .getRemoteAddress()
-                                        .getAddress()
-                                        .getHostAddress());
-    }
+//    @Bean
+//    fun keyResolver(): KeyResolver {
+//        return KeyResolver { exchange: ServerWebExchange ->
+//            Mono.just(
+//                exchange.request
+//                    .remoteAddress
+//                    .address
+//                    .hostAddress
+//            )
+//        }
+//    }
 
-    @Bean
-    public WebClient webClient() {
-        return WebClient
-                .builder()
-                .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .defaultHeader(ACCEPT, APPLICATION_JSON_VALUE)
-                .build();
-    }
+//    @Bean
+//    fun webClient(): WebClient {
+//        return WebClient
+//            .builder()
+//            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+//            .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+//            .build()
+//    }
 
-    @Bean
-    public RewriteFunction<LegoSet, LegoSetWithSeries> responseRewriteFunction(RoutesProperties routes) {
-        return (exchange, legoSet) -> webClient()
-                .get()
-                .uri(routes.getDictionary(), uriBuilder -> uriBuilder
-                        .path("/api/v1/series/{series}")
-                        .build(legoSet.getSeriesName()))
-                .retrieve()
-                .bodyToMono(Series.class)
-                .map(series -> buildLegoWithSeries(legoSet, series));
-    }
+//    @Bean
+//    fun responseRewriteFunction(routes: RoutesProperties): RewriteFunction<LegoSet, LegoSetWithSeries> {
+//        return RewriteFunction<LegoSet, LegoSetWithSeries> { _, legoSet ->
+//            webClient()
+//                .get()
+//                .uri(routes.dictionary) { uriBuilder: UriBuilder ->
+//                    uriBuilder
+//                        .path("/api/v1/series/{series}")
+//                        .build(legoSet.seriesName)
+//                }
+//                .retrieve()
+//                .bodyToMono<Series>(Series::class.java)
+//                .map<LegoSetWithSeries> { series: Series? -> buildLegoWithSeries(legoSet, series) }
+//        }
+//    }
 
-    @NotNull
-    private LegoSetWithSeries buildLegoWithSeries(@NotNull LegoSet legoSet, @Nullable Series series) {
-        return new LegoSetWithSeries()
-                .setNumber(legoSet.getNumber())
-                .setName(legoSet.getName())
-                .setPartsCount(legoSet.getPartsCount())
-                .setAge(legoSet.getAge())
-                .setSuggestedPrice(legoSet.getSuggestedPrice())
-                .setSeries(series);
-    }
-
+    private fun buildLegoWithSeries(legoSet: LegoSet, series: Series) =
+        LegoSetWithSeries(
+            number = legoSet.number,
+            name = legoSet.name,
+            partsCount = legoSet.partsCount,
+            age = legoSet.age,
+            suggestedPrice = legoSet.suggestedPrice,
+            series = series
+        )
 }

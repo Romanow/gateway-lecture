@@ -1,5 +1,6 @@
-package ru.romanow.dictionary.domain.enums;
+package ru.romanow.dictionary.domain.enums
 
-public enum SeriesType {
-    SYSTEM, TECHNIC
+enum class SeriesType {
+    SYSTEM,
+    TECHNIC
 }

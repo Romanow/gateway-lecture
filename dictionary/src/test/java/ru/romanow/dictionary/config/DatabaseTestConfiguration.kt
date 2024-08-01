@@ -1,41 +1,49 @@
-package ru.romanow.dictionary.config;
+package ru.romanow.dictionary.config
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.postgresql.Driver;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Primary;
-import org.testcontainers.containers.PostgreSQLContainer;
+import com.zaxxer.hikari.HikariDataSource
+import org.postgresql.Driver
+import org.slf4j.LoggerFactory
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.DependsOn
+import org.springframework.context.annotation.Primary
+import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.containers.output.Slf4jLogConsumer
+
+typealias PostgresContainer = PostgreSQLContainer<*>
 
 @TestConfiguration
-public class DatabaseTestConfiguration {
+class DatabaseTestConfiguration {
+    private val logger = LoggerFactory.getLogger(DatabaseTestConfiguration::class.java)
 
-    private static final String POSTGRES_IMAGE = "postgres:13-alpine";
-    private static final String DATABASE_NAME = "dictionary";
-    private static final String USERNAME = "program";
-    private static final String PASSWORD = "test";
+    @Bean(destroyMethod = "close")
+    fun postgres(): PostgreSQLContainer<*> {
+        val postgres = PostgresContainer(POSTGRES_IMAGE)
+            .withUsername(USERNAME)
+            .withPassword(PASSWORD)
+            .withDatabaseName(DATABASE_NAME)
+            .withLogConsumer(Slf4jLogConsumer(logger))
 
-    @Bean
-    public PostgreSQLContainer<?> postgres() {
-        final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(POSTGRES_IMAGE)
-                .withUsername(USERNAME)
-                .withPassword(PASSWORD)
-                .withDatabaseName(DATABASE_NAME);
-        postgres.start();
-        return postgres;
+        postgres.start()
+        return postgres
     }
 
     @Primary
     @DependsOn("postgres")
     @Bean(destroyMethod = "close")
-    public HikariDataSource dataSource() {
-        final HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl(postgres().getJdbcUrl());
-        dataSource.setUsername(USERNAME);
-        dataSource.setPassword(PASSWORD);
-        dataSource.setDriverClassName(Driver.class.getCanonicalName());
-        return dataSource;
+    fun dataSource(): HikariDataSource {
+        val dataSource = HikariDataSource()
+        dataSource.jdbcUrl = postgres().jdbcUrl
+        dataSource.username = USERNAME
+        dataSource.password = PASSWORD
+        dataSource.driverClassName = Driver::class.java.canonicalName
+        return dataSource
     }
 
+    companion object {
+        private const val POSTGRES_IMAGE = "postgres:15-alpine"
+        private const val DATABASE_NAME = "openapi"
+        private const val USERNAME = "program"
+        private const val PASSWORD = "test"
+    }
 }

@@ -1,9 +1,7 @@
-package ru.romanow.dictionary.mappers;
+package ru.romanow.dictionary.mappers
 
-import ru.romanow.dictionary.domain.Identity;
+import ru.romanow.dictionary.domain.Identity
 
-public interface ModelMapper<ID, T extends Identity<ID>, RESP> {
-
-    RESP toModel(T entity);
-
+interface ModelMapper<ID, T : Identity<ID?>, RESP> {
+    fun toModel(entity: T): RESP
 }

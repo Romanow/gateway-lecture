@@ -1,12 +1,9 @@
-package ru.romanow.dictionary.mappers;
+package ru.romanow.dictionary.mappers
 
-import org.mapstruct.Mapper;
-import ru.romanow.dictionary.domain.SeriesEntity;
-import ru.romanow.dictionary.mappers.config.MappingConfig;
-import ru.romanow.dictionary.models.Series;
+import org.mapstruct.Mapper
+import ru.romanow.dictionary.domain.SeriesEntity
+import ru.romanow.dictionary.mappers.config.MappingConfig
+import ru.romanow.dictionary.models.Series
 
-@Mapper(config = MappingConfig.class)
-public interface SeriesMapper
-        extends ModelMapper<String, SeriesEntity, Series> {
-
-}
+@Mapper(config = MappingConfig::class)
+interface SeriesMapper : ModelMapper<String?, SeriesEntity?, Series?>

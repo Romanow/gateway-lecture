@@ -1,11 +1,11 @@
-package ru.romanow.gateway;
+package ru.romanow.gateway
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
 
 @SpringBootApplication
-public class GatewayApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(GatewayApplication.class, args);
-    }
+class GatewayApplication
+
+fun main(args: Array<String>) {
+    SpringApplication.run(GatewayApplication::class.java, *args)
 }

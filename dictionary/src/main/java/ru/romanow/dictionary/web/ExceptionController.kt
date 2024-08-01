@@ -1,25 +1,25 @@
-package ru.romanow.dictionary.web;
+package ru.romanow.dictionary.web
 
-import io.swagger.v3.oas.annotations.Hidden;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.romanow.dictionary.models.ErrorResponse;
+import io.swagger.v3.oas.annotations.Hidden
+import jakarta.persistence.EntityNotFoundException
+import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.*
+import ru.romanow.dictionary.models.ErrorResponse
 
 @Hidden
 @RestControllerAdvice
-public class ExceptionController {
+class ExceptionController {
+    private val logger = LoggerFactory.getLogger(ExceptionController::class.java)
 
-    private static final Logger logger = LoggerFactory.getLogger(ExceptionController.class);
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(EntityNotFoundException::class)
+    fun handleException(exception: EntityNotFoundException) = ErrorResponse(exception.message)
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(RuntimeException.class)
-    public ErrorResponse error(RuntimeException exception) {
-        logger.error("", exception);
-        return new ErrorResponse(exception.getMessage());
+    @ExceptionHandler(RuntimeException::class)
+    fun error(exception: RuntimeException): ErrorResponse {
+        logger.error("", exception)
+        return ErrorResponse(exception.message)
     }
-
 }

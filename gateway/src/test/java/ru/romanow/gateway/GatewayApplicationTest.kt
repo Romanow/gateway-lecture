@@ -1,12 +1,12 @@
-package ru.romanow.gateway;
+package ru.romanow.gateway
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test
+import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class GatewayApplicationTest {
+internal class GatewayApplicationTest {
 
     @Test
-    void test() {
+    fun test() {
     }
 }

@@ -1,5 +1,7 @@
-package ru.romanow.dictionary.domain.enums;
+package ru.romanow.dictionary.domain.enums
 
-public enum SeriesComplexity {
-    BEGINNER, ADVANCED, PROFESSIONAL
+enum class SeriesComplexity {
+    BEGINNER,
+    ADVANCED,
+    PROFESSIONAL
 }

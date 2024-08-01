@@ -1,28 +1,31 @@
 plugins {
     id "idea"
-    id "java-library"
-    id "io.spring.dependency-management" version "1.0.11.RELEASE"
-    id "org.springframework.boot" version "2.7.3" apply false
+    id "org.jetbrains.kotlin.jvm" version "1.9.25"
+    id "io.spring.dependency-management" version "1.1.0"
+    id "org.jlleitschuh.gradle.ktlint" version "12.1.0" apply false
+    id "org.jetbrains.kotlin.plugin.jpa" version "1.9.25" apply false
+    id "org.jetbrains.kotlin.plugin.spring" version "1.9.25" apply false
+    id "org.springframework.boot" version "3.2.8" apply false
+    id "com.gorylenko.gradle-git-properties" version "2.4.1"
 }
 
 ext {
-    springBootVersion = "2.7.3"
-    springCloudVersion = "2021.0.3"
-    springCloudSecurityVersion = "2.2.4.RELEASE"
-    openApiVersion = "1.6.11"
-    mapstructVersion = "1.5.2.Final"
-    bucket4jVersion = "7.6.0"
-    jetbrainsAnnotationsVersion = "22.0.0"
-    postgresContainerVersion = "1.17.3"
+    springBootVersion = "3.2.8"
+    springCloudVersion = "2023.0.3"
+    openApiVersion = "2.6.0"
+    mapstructVersion = "1.5.5.Final"
+    bucket4jVersion = "7.6.1"
+    jetbrainsAnnotationsVersion = "24.0.1"
+    postgresContainerVersion = "1.20.1"
 }
 
 allprojects {
     apply plugin: "idea"
-    apply plugin: "java-library"
+    apply plugin: "kotlin"
+    apply plugin: "org.jlleitschuh.gradle.ktlint"
     apply plugin: "io.spring.dependency-management"
 
-    sourceCompatibility = "11"
-    targetCompatibility = "11"
+    [compileKotlin, compileTestKotlin]*.kotlinOptions*.jvmTarget = "17"
 
     idea {
         module {
@@ -32,8 +35,14 @@ allprojects {
     }
 
     repositories {
-        mavenLocal()
         mavenCentral()
+    }
+
+    ktlint {
+        version.set("1.2.1")
+        filter {
+            exclude { entry -> entry.file.toString().contains("generated") }
+        }
     }
 
     dependencyManagement {
@@ -43,12 +52,19 @@ allprojects {
     }
 
     dependencies {
-        compileOnly "org.projectlombok:lombok"
-        annotationProcessor "org.projectlombok:lombok"
         implementation "org.jetbrains:annotations:$jetbrainsAnnotationsVersion"
     }
 
     test {
         useJUnitPlatform()
+        testLogging {
+            showStandardStreams = true
+        }
+    }
+
+    processResources {
+        filesMatching(["**/properties-from-gradle.properties"]) {
+            expand(project.properties)
+        }
     }
 }

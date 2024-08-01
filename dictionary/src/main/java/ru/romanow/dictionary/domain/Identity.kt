@@ -1,7 +1,5 @@
-package ru.romanow.dictionary.domain;
+package ru.romanow.dictionary.domain
 
-public interface Identity<ID> {
-
-    ID getId();
-
+interface Identity<ID> {
+    val id: ID
 }
