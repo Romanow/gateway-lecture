@@ -9,6 +9,9 @@ spring:
     hibernate.ddl-auto: none
     generate-ddl: false
     open-in-view: false
+  liquibase:
+    change-log: classpath:db/liquibase/changelog.xml
+    test-rollback-on-update: true
 
 springdoc:
   paths-to-match:

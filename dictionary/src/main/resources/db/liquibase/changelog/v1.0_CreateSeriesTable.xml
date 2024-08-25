@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+    <changeSet id="1" author="aromanow" labels="v1.0">
+        <sql>
+            CREATE TABLE series
+            (
+                name       VARCHAR(80) PRIMARY KEY,
+                type       VARCHAR NOT NULL CHECK (type IN ('SYSTEM', 'TECHNIC')),
+                complexity VARCHAR NOT NULL CHECK (complexity IN ('BEGINNER', 'ADVANCED', 'PROFESSIONAL')),
+                age        INT CHECK (age >= 0)
+            );
+        </sql>
+        <rollback>
+            <sql>
+                DROP TABLE series;
+            </sql>
+        </rollback>
+    </changeSet>
+    <changeSet id="2" author="aromanow" labels="v1.0">
+        <sql>
+            INSERT INTO series(name, type, complexity, age)
+            VALUES ('Technic', 'TECHNIC', 'ADVANCED', 12),
+                   ('Creator Expert', 'SYSTEM', 'PROFESSIONAL', 18),
+                   ('Trains', 'SYSTEM', 'BEGINNER', 6),
+                   ('Castle', 'SYSTEM', 'BEGINNER', 6);
+        </sql>
+        <rollback>
+            TRUNCATE TABLE series;
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

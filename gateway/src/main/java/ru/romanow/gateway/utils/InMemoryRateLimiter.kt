@@ -1,26 +1,26 @@
 package ru.romanow.gateway.utils
 
+import io.github.bucket4j.Bandwidth
 import io.github.bucket4j.Bucket
+import io.github.bucket4j.Refill
+import org.springframework.cloud.gateway.filter.ratelimit.AbstractRateLimiter
 import org.springframework.cloud.gateway.filter.ratelimit.RateLimiter
+import reactor.core.publisher.Mono
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 
 class InMemoryRateLimiter(replenishRate: Int, burstCapacity: Int, duration: Duration) :
-    AbstractRateLimiter<InMemoryRateLimiter.Config?>(
-        Config::class.java, CONFIGURATION_PROPERTY_NAME, null
-    ) {
+    AbstractRateLimiter<InMemoryRateLimiter.Config>(Config::class.java, CONFIGURATION_PROPERTY_NAME, null) {
+
     private val ipBucketMap: MutableMap<String, Bucket> = ConcurrentHashMap()
     private val config: Config
 
     init {
-        config = Config()
-            .setReplenishRate(replenishRate)
-            .setBurstCapacity(burstCapacity)
-            .setDuration(duration)
+        config = Config(replenishRate, burstCapacity, duration)
     }
 
     override fun isAllowed(routeId: String, id: String): Mono<RateLimiter.Response> {
-        val bucket = ipBucketMap.computeIfAbsent(id) { k: String? ->
+        val bucket = ipBucketMap.computeIfAbsent(id) {
             val refill: Refill = Refill.greedy(config.replenishRate.toLong(), config.duration)
             val limit: Bandwidth = Bandwidth.classic(config.burstCapacity.toLong(), refill)
             Bucket.builder()
@@ -29,8 +29,8 @@ class InMemoryRateLimiter(replenishRate: Int, burstCapacity: Int, duration: Dura
         }
 
         // tryConsume returns false immediately if no tokens available with the bucket
-        val probe: ConsumptionProbe = bucket.tryConsumeAndReturnRemaining(1)
-        return if (probe.isConsumed()) {
+        val probe = bucket.tryConsumeAndReturnRemaining(1)
+        return if (probe.isConsumed) {
             // the limit is not exceeded
             Mono.just<RateLimiter.Response>(RateLimiter.Response(true, headers(probe.getRemainingTokens())))
         } else {
@@ -47,11 +47,11 @@ class InMemoryRateLimiter(replenishRate: Int, burstCapacity: Int, duration: Dura
         )
     }
 
-    class Config {
-        val replenishRate = 0
-        val burstCapacity = 0
-        val duration: Duration = Duration.ofSeconds(1)
-    }
+    data class Config(
+        var replenishRate: Int = 0,
+        var burstCapacity: Int = 0,
+        var duration: Duration = Duration.ofSeconds(1)
+    )
 
     companion object {
         private const val CONFIGURATION_PROPERTY_NAME = "in-memory-rate-limiter"

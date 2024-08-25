@@ -2,11 +2,7 @@ package ru.romanow.gateway.config.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
-@ConfigurationProperties("application")
+@ConfigurationProperties("application.routes")
 data class ApplicationProperties(
-    var routes: RoutesProperties
-)
-
-class RoutesProperties {
     var dictionary: String? = null
-}
+)

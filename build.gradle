@@ -7,7 +7,7 @@ plugins {
     id "org.jetbrains.kotlin.plugin.jpa" version "1.9.25" apply false
     id "org.jetbrains.kotlin.plugin.spring" version "1.9.25" apply false
     id "org.springframework.boot" version "3.2.8" apply false
-    id "com.gorylenko.gradle-git-properties" version "2.4.1"
+    id "com.gorylenko.gradle-git-properties" version "2.4.2"
 }
 
 ext {
@@ -24,6 +24,7 @@ allprojects {
     apply plugin: "org.jetbrains.kotlin.kapt"
     apply plugin: "org.jlleitschuh.gradle.ktlint"
     apply plugin: "io.spring.dependency-management"
+    apply plugin: "com.gorylenko.gradle-git-properties"
 
     [compileKotlin, compileTestKotlin]*.kotlinOptions*.jvmTarget = "17"
 
@@ -40,9 +41,6 @@ allprojects {
 
     ktlint {
         version.set("1.2.1")
-        filter {
-            exclude { entry -> entry.file.toString().contains("generated") }
-        }
     }
 
     dependencyManagement {
@@ -63,6 +61,14 @@ allprojects {
             showStandardStreams = true
         }
     }
+
+    gitProperties {
+        dateFormat = "dd.MM.yyyy HH:mm:ss"
+        dateFormatTimeZone = "Europe/Moscow"
+        extProperty = "gitProps"
+    }
+
+    generateGitProperties.outputs.upToDateWhen { false }
 
     processResources {
         filesMatching(["**/properties-from-gradle.properties"]) {

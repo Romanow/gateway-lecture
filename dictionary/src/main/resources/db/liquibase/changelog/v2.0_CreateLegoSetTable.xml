@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+    <changeSet id="1" author="aromanow" labels="v1.0">
+        <sql>
+            CREATE TABLE lego_set
+            (
+                number          VARCHAR(20) PRIMARY KEY,
+                name            VARCHAR(120)  NOT NULL,
+                age             INT CHECK (age > 0),
+                parts_count     INT,
+                suggested_price NUMERIC(8, 2) NOT NULL,
+                series_id       VARCHAR(80)   NOT NULL
+                    CONSTRAINT fk_lego_set_series_id REFERENCES series (name)
+            );
+
+            CREATE UNIQUE INDEX udx_lego_set_name ON lego_set (name);
+            CREATE INDEX udx_lego_set_series_id ON lego_set (series_id);
+        </sql>
+        <rollback>
+            <sql>
+                DROP TABLE lego_set;
+            </sql>
+        </rollback>
+    </changeSet>
+    <changeSet id="2" author="aromanow" labels="v1.0">
+        <sql>
+            INSERT INTO lego_set(number, name, age, parts_count, suggested_price, series_id)
+            VALUES (42143, 'Ferrari Daytona SP3', 18, 3778, 399, 'Technic'),
+                   (42115, 'Lamborghini Sian FKP 37', 18, 3696, 379, 'Technic'),
+                   (42110, 'Land Rover Defender', 18, 2573, 199, 'Technic'),
+                   (42100, 'Liebherr R 9800 Excavator', 18, 4108, 449, 'Technic'),
+                   (42083, 'Bugatti Chiron', 11, 3599, 379, 'Technic'),
+                   (9398, '4x4 Crawler', 18, 1225, 199, 'Technic'),
+
+                   (10297, 'Boutique Hotel', 16, 3066, 199, 'Creator Expert'),
+                   (10264, 'Corner Garage', 16, 2569, 199, 'Creator Expert'),
+                   (10255, 'Assembly Square', 18, 4002, 279, 'Creator Expert'),
+                   (10270, 'Bookshop', 16, 2504, 199, 'Creator Expert'),
+
+                   (60336, 'Freight Train', 7, 1153, 199, 'Trains'),
+                   (60337, 'Express Passenger Train', 7, 764, 189, 'Trains'),
+                   (7898, 'Cargo Train Deluxe', 6, 856, 150, 'Trains'),
+                   (4559, 'Cargo Railway', 8, 835, 130, 'Trains'),
+                   (4565, 'Freight &amp; Crane Railway', 8, 966, 140, 'Trains'),
+
+                   (70404, 'King''s Castle', 7, 996, 99, 'Castle'),
+                   (10193, 'Medieval Market Village', 12, 1601, 99, 'Castle'),
+                   (6090, 'Royal Knight', 8, 743, 95, 'Castle');
+        </sql>
+        <rollback>
+            TRUNCATE TABLE lego_set;
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,17 @@
+     _    ____ ___    ____       _
+    / \  |  _ \_ _|  / ___| __ _| |_ _____      ____ _ _   _
+   / _ \ | |_) | |  | |  _ / _` | __/ _ \ \ /\ / / _` | | | |
+  / ___ \|  __/| |  | |_| | (_| | ||  __/\ V  V / (_| | |_| |
+ /_/   \_\_|  |___|  \____|\__,_|\__\___| \_/\_/ \__,_|\__, |
+                                                       |___/
+==============================================================
+Profile: ${spring.profiles.active}
+Application name: ${spring.application.name}
+Application version: ${git.build.version}
+==============================================================
+Built from branch: ${git.branch}
+Commit id: ${git.commit.id.abbrev}
+Commit time: ${git.commit.time}
+==============================================================
+Dictionary URL: ${application.routes.dictionary}
+==============================================================
