@@ -19,6 +19,7 @@ dependencies {
     kapt "org.springframework.boot:spring-boot-configuration-processor"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "com.maciejwalkowiak.spring:wiremock-spring-boot:$wiremockSpringVersion"
 }
 
 bootJar {

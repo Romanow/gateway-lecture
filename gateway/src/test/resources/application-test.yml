@@ -1,0 +1,8 @@
+application:
+  rate-limiter:
+    replenish-rate: 10
+    burst-capacity: 10
+
+logging:
+  level:
+    org.springframework.cloud.gateway.filter.factory.RetryGatewayFilterFactory: trace

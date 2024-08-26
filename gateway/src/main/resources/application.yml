@@ -1,6 +1,13 @@
 server:
   port: 8000
 
+application:
+  retry:
+    retry-count: 3
+  rate-limiter:
+    replenish-rate: 1
+    burst-capacity: 2
+
 spring:
   profiles:
     active: local

@@ -1,0 +1,36 @@
+{
+  "groups": [
+    {
+      "name": "application",
+      "type": "ru.romanow.gateway.config.properties.ApplicationProperties",
+      "sourceType": "ru.romanow.gateway.config.properties.ApplicationProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "application.routes.dictionary",
+      "type": "java.lang.String",
+      "description": "URL сервиса Dictionary.",
+      "sourceType": "ru.romanow.gateway.config.properties.ApplicationProperties"
+    },
+    {
+      "name": "application.rate-limiter.replenish-кate",
+      "type": "java.lang.String",
+      "description": "Скорость восполнения Time Bucket.",
+      "sourceType": "ru.romanow.gateway.config.properties.RateLimiter"
+    },
+    {
+      "name": "application.rate-limiter.burst-сapacity",
+      "type": "java.lang.String",
+      "description": "Предельная емкость bucket.",
+      "sourceType": "ru.romanow.gateway.config.properties.RateLimiter"
+    },
+    {
+      "name": "application.retry.retry-сount",
+      "type": "java.lang.String",
+      "description": "Количество повторов запроса, при возникновении 502 или 504 ошибок.",
+      "sourceType": "ru.romanow.gateway.config.properties.ApplicationProperties"
+    }
+  ],
+  "hints": []
+}

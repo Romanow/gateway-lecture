@@ -20,7 +20,8 @@ import ru.romanow.gateway.models.LegoSet
 import ru.romanow.gateway.models.LegoSetWithSeries
 import ru.romanow.gateway.models.Series
 import ru.romanow.gateway.utils.InMemoryRateLimiter
-import java.time.Duration
+import java.io.IOException
+import java.time.Duration.ofSeconds
 import java.time.LocalDateTime.*
 import java.time.format.DateTimeFormatter
 
@@ -34,52 +35,53 @@ class WebConfiguration {
             route(id = "dictionary-lego-sets") {
                 path("/dict/v1/lego-sets/{id}")
                 filters {
+                    stripPrefix(1)
+                    prefixPath("/api")
                     addRequestHeader(TIMESTAMP_HEADER, DateTimeFormatter.ISO_DATE_TIME.format(now()))
                     requestRateLimiter {
-                        it.rateLimiter = rateLimiter()
+                        it.rateLimiter = rateLimiter(properties)
                         it.keyResolver = keyResolver()
                     }
                     retry {
-                        it.retries = 3
-                        it.setStatuses(HttpStatus.NOT_FOUND)
-                        it.setSeries(HttpStatus.Series.SERVER_ERROR)
-                        it.setBackoff(Duration.ofSeconds(1), Duration.ofSeconds(10), 2, false)
+                        it.retries = properties.retry.retryCount
+                        it.setStatuses(HttpStatus.BAD_GATEWAY, HttpStatus.GATEWAY_TIMEOUT)
+                        it.setExceptions(IOException::class.java)
+                        it.setBackoff(ofSeconds(1), ofSeconds(10), 2, false)
                     }
                     modifyResponseBody(
                         LegoSet::class.java,
                         LegoSetWithSeries::class.java,
                         responseRewriteFunction(properties)
                     )
-                    stripPrefix(1)
-                    prefixPath("/api")
                 }
-                metadata(RESPONSE_TIMEOUT_ATTR, 2000)
-                uri(properties.dictionary)
+                uri(properties.routes.dictionary)
+                metadata(RESPONSE_TIMEOUT_ATTR, 500)
             }
             route(id = "dictionary") {
                 path("/dict/**")
                 filters {
+                    stripPrefix(1)
+                    prefixPath("/api")
                     addRequestHeader(TIMESTAMP_HEADER, DateTimeFormatter.ISO_DATE_TIME.format(now()))
                     requestRateLimiter {
-                        it.rateLimiter = rateLimiter()
+                        it.rateLimiter = rateLimiter(properties)
                         it.keyResolver = keyResolver()
                     }
                     retry {
-                        it.retries = 3
-                        it.setStatuses(HttpStatus.NOT_FOUND)
-                        it.setSeries(HttpStatus.Series.SERVER_ERROR)
-                        it.setBackoff(Duration.ofSeconds(1), Duration.ofSeconds(10), 2, false)
+                        it.retries = properties.retry.retryCount
+                        it.setStatuses(HttpStatus.BAD_GATEWAY, HttpStatus.GATEWAY_TIMEOUT)
+                        it.setExceptions(IOException::class.java)
+                        it.setBackoff(ofSeconds(1), ofSeconds(10), 2, false)
                     }
-                    stripPrefix(1)
-                    prefixPath("/api")
                 }
-                metadata(RESPONSE_TIMEOUT_ATTR, 2000)
-                uri(properties.dictionary)
+                uri(properties.routes.dictionary)
+                metadata(RESPONSE_TIMEOUT_ATTR, 500)
             }
         }
 
     @Bean
-    fun rateLimiter() = InMemoryRateLimiter(1, 2, Duration.ofSeconds(10))
+    fun rateLimiter(properties: ApplicationProperties) =
+        InMemoryRateLimiter(properties.rateLimiter.replenishRate, properties.rateLimiter.burstCapacity, ofSeconds(10))
 
     @Bean
     fun keyResolver() = KeyResolver { Mono.just(it.request.remoteAddress!!.address.hostAddress) }
@@ -98,7 +100,7 @@ class WebConfiguration {
         return RewriteFunction<LegoSet, LegoSetWithSeries> { _, legoSet ->
             webClient()
                 .get()
-                .uri(properties.dictionary!!) { it.path("/api/v1/series/{series}").build(legoSet.seriesName) }
+                .uri(properties.routes.dictionary) { it.path("/api/v1/series/{series}").build(legoSet.seriesName) }
                 .retrieve()
                 .bodyToMono(Series::class.java)
                 .map { series: Series? -> buildLegoWithSeries(legoSet, series!!) }
