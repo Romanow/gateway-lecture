@@ -19,17 +19,15 @@
     * а для чего его использовать не надо.
 2. В двух словах про Spring Cloud Gateway и WebFlux.
 3. Посмотрим что Spring Cloud Gateway умеет и чем он нам будет полезен:
-    1. Route Predicate как способ настроить гибкие правила проксирования (а еще как мы еще проверяем запрос на
-       соответствие OpenAPI);
-    2. Gateway Filter Factory как средство модификации запросов.
-        * `StripPrefixGatewayFactory` и `PrefixPathGatewayFilterFactory` – модифицируем path;
-        * `AddRequestHeaderGatewayFilterFactory` – добавляем заголовки;
-        * `RequestRateLimiterGatewayFilterFactory` – как средство контролировать количество запросов;
-        * `RetryGatewayFilterFactory` – реализуем retry запросов;
-        * `ModifyResponseBodyGatewayFilterFactory` – модифицируем ответ. Разберемся как добраться до "тела" запроса и
-          каике с этим связаны проблемы.
-    3. Задаем таймауты запросов.
-4. Подключаем Spring Cloud Security для защиты наших endpoints.
+    * RoutePredicate как способ настроить гибкие правила проксирования (а еще как мы еще проверяем запрос на
+      соответствие OpenAPI);
+    * GatewayFilterFactory как средство модификации запросов.
+    * Модифицируем path.
+    * Добавляем заголовки.
+4. Реализуем Rate Limiter для запросов пользователя.
+5. Добавляем retry и таймауты на запросы.
+6. Реализуем логгирование тела запроса: как добраться до body и каике с этим связаны проблемы.
+7. Подключаем Spring Cloud Security для защиты наших endpoints.
 
 ## Доклад
 
@@ -72,13 +70,13 @@ API Gateway в первую очередь утильный элемент си�
 
 ```yaml
 spring:
-  cloud:
-    gateway:
-      routes:
-        - id: path-route
-          uri: http://dictionary:8080
-          predicates:
-            - Path=/dict/**
+    cloud:
+        gateway:
+            routes:
+                -   id: path-route
+                    uri: http://dictionary:8080
+                    predicates:
+                        - Path=/dict/**
 ```
 
 [The Path Route Predicate Factory](https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/#the-path-route-predicate-factory)
@@ -87,13 +85,13 @@ spring:
 
 ```yaml
 spring:
-  cloud:
-    gateway:
-      routes:
-        - id: header-route
-          uri: http://dictionary:8080
-          predicates:
-            - Header=X-Target-Service, dict
+    cloud:
+        gateway:
+            routes:
+                -   id: header-route
+                    uri: http://dictionary:8080
+                    predicates:
+                        - Header=X-Target-Service, dict
 ```
 
 [The Header Route Predicate Factory](https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/#the-header-route-predicate-factory)
@@ -102,13 +100,13 @@ spring:
 
 ```yaml
 spring:
-  cloud:
-    gateway:
-      routes:
-        - id: method-route
-          uri: http://dictionary:8080
-          predicates:
-            - Method=GET,POST
+    cloud:
+        gateway:
+            routes:
+                -   id: method-route
+                    uri: http://dictionary:8080
+                    predicates:
+                        - Method=GET,POST
 ```
 
 [The Method Route Predicate Factory](https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/#the-method-route-predicate-factory)
@@ -117,13 +115,13 @@ spring:
 
 ```yaml
 spring:
-  cloud:
-    gateway:
-      routes:
-        - id: query-route
-          uri: http://dictionary:8080
-          predicates:
-            - Query=service, dict
+    cloud:
+        gateway:
+            routes:
+                -   id: query-route
+                    uri: http://dictionary:8080
+                    predicates:
+                        - Query=service, dict
 ```
 
 [The Query Route Predicate Factory](https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/#the-query-route-predicate-factory)
@@ -146,18 +144,18 @@ _Cross-Origin Resource Sharing (CORS)_ — механизм, использую�
 
 ```yaml
 spring:
-  cloud:
-    gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: "*"
-            allowedMethods:
-              - GET
-              - POST
-              - PATCH
-              - PUT
-              - DELETE
+    cloud:
+        gateway:
+            globalcors:
+                cors-configurations:
+                    '[/**]':
+                        allowedOrigins: "*"
+                        allowedMethods:
+                            - GET
+                            - POST
+                            - PATCH
+                            - PUT
+                            - DELETE
 ```
 
 ```shell
@@ -444,3 +442,7 @@ $ ./gradlew dictionary:bootRun --args='--spring.profiles.active=local'
 
 1. [Spring Cloud Gateway](https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html)
 2. [Bucket4j Rate Limiter](https://github.com/bucket4j/bucket4j)
+
+## TODO
+
+1. Описать проблематику: какие сложности у нас будут без Gateway.
