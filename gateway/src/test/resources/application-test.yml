@@ -1,4 +1,5 @@
 application:
+  request-timeout: 1000
   rate-limiter:
     replenish-rate: 10
     burst-capacity: 10

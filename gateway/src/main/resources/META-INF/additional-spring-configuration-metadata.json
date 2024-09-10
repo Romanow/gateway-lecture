@@ -30,6 +30,13 @@
       "type": "java.lang.String",
       "description": "Количество повторов запроса, при возникновении 502 или 504 ошибок.",
       "sourceType": "ru.romanow.gateway.config.properties.ApplicationProperties"
+    },
+    {
+      "name": "application.request-timeout",
+      "type": "java.lang.Integer",
+      "description": "Таймаут запроса.",
+      "sourceType": "ru.romanow.gateway.config.properties.ApplicationProperties",
+      "defaultValue": 500
     }
   ],
   "hints": []

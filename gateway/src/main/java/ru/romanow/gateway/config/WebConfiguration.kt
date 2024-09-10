@@ -16,6 +16,7 @@ import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import ru.romanow.gateway.config.properties.ApplicationProperties
+import ru.romanow.gateway.filters.LoggingHandler
 import ru.romanow.gateway.models.LegoSet
 import ru.romanow.gateway.models.LegoSetWithSeries
 import ru.romanow.gateway.models.Series
@@ -49,13 +50,12 @@ class WebConfiguration {
                         it.setBackoff(ofSeconds(1), ofSeconds(10), 2, false)
                     }
                     modifyResponseBody(
-                        LegoSet::class.java,
-                        LegoSetWithSeries::class.java,
+                        LegoSet::class.java, LegoSetWithSeries::class.java,
                         responseRewriteFunction(properties)
                     )
                 }
                 uri(properties.routes.dictionary)
-                metadata(RESPONSE_TIMEOUT_ATTR, 500)
+                metadata(RESPONSE_TIMEOUT_ATTR, properties.requestTimeout)
             }
             route(id = "dictionary") {
                 path("/dict/**")
@@ -63,6 +63,8 @@ class WebConfiguration {
                     stripPrefix(1)
                     prefixPath("/api")
                     addRequestHeader(TIMESTAMP_HEADER, DateTimeFormatter.ISO_DATE_TIME.format(now()))
+                    modifyRequestBody(String::class.java, String::class.java, LoggingHandler("Request"))
+                    modifyResponseBody(String::class.java, String::class.java, LoggingHandler("Response"))
                     requestRateLimiter {
                         it.rateLimiter = rateLimiter(properties)
                         it.keyResolver = keyResolver()
@@ -75,7 +77,7 @@ class WebConfiguration {
                     }
                 }
                 uri(properties.routes.dictionary)
-                metadata(RESPONSE_TIMEOUT_ATTR, 500)
+                metadata(RESPONSE_TIMEOUT_ATTR, properties.requestTimeout)
             }
         }
 
@@ -95,7 +97,6 @@ class WebConfiguration {
             .build()
     }
 
-    @Bean
     fun responseRewriteFunction(properties: ApplicationProperties): RewriteFunction<LegoSet, LegoSetWithSeries> {
         return RewriteFunction<LegoSet, LegoSetWithSeries> { _, legoSet ->
             webClient()

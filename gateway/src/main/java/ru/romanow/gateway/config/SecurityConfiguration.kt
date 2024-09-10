@@ -22,6 +22,7 @@ class SecurityConfiguration {
             it.anyExchange().authenticated()
         }
             .httpBasic { }
+            .csrf { it.disable() }
             .build()
 
     @Bean

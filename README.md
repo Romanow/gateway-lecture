@@ -19,15 +19,12 @@
     * а для чего его использовать не надо.
 2. В двух словах про Spring Cloud Gateway и WebFlux.
 3. Посмотрим что Spring Cloud Gateway умеет и чем он нам будет полезен:
-    * RoutePredicate как способ настроить гибкие правила проксирования (а еще как мы еще проверяем запрос на
-      соответствие OpenAPI);
-    * GatewayFilterFactory как средство модификации запросов.
-    * Модифицируем path.
+    * Настраиваем проксирование запросов.
     * Добавляем заголовки.
-4. Реализуем Rate Limiter для запросов пользователя.
-5. Добавляем retry и таймауты на запросы.
-6. Реализуем логгирование тела запроса: как добраться до body и каике с этим связаны проблемы.
-7. Подключаем Spring Cloud Security для защиты наших endpoints.
+    * Реализуем Rate Limiter для запросов пользователя.
+    * Логируем запрос и ответ.
+4. Добавляем retry и таймауты на запросы.
+5. Подключаем Spring Cloud Security для защиты наших endpoints.
 
 ## Доклад
 
@@ -346,9 +343,12 @@ public class WebConfiguration {
 больше 400ms. Это называется Fail Fast – если операция выполняется слишком долго, то ее лучше прервать и повторить еще
 раз.
 
-Для задания таймаутов в Java HTTP клиентах можно задать `Connection Timeout` (установка соединения) и Read Timeout (
-таймаут чтения из InputStream после установки
-соединения) ([Class URLConnection :: setReadTimeout](https://docs.oracle.com/javase/8/docs/api/java/net/URLConnection.html#setReadTimeout-int-))
+Для задания таймаутов в Java HTTP клиентах можно задать:
+
+* `Connection Timeout` (установка соединения).
+* `Read Timeout` (таймаут чтения из InputStream после установки соединения).
+
+Источник: [Class URLConnection :: setReadTimeout](https://docs.oracle.com/javase/8/docs/api/java/net/URLConnection.html#setReadTimeout-int-).
 
 ```java
 
@@ -395,23 +395,19 @@ public class WebConfiguration {
 построен на WebFlux, для настройки правил security требуется создать `SecurityWebFilterChain` (отличии от WebMVC, где мы
 наследовались от `WebSecurityConfigurerAdapter` и задавали конфигурацию `HttpSecurity`).
 
-```java
-
+```kotlin
 @Configuration
-public class SecurityConfiguration {
+class SecurityConfiguration {
 
     @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http.authorizeExchange(spec -> spec
-                .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()     // для preflight request CORS
-                .pathMatchers(HttpMethod.GET, "/manage/**").permitAll()  // для actuator
-                .pathMatchers("/dict/**").authenticated()                // все остальное с Basic Auth
-            )
-            .httpBasic();
-
-        return http.build();
+    fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain =
+        http.authorizeExchange {
+        it.pathMatchers(OPTIONS).permitAll()           // для CORS Preflight Request
+        it.pathMatchers(GET, "/manage/**").permitAll() // Actuator Endpoints
+        it.anyExchange().authenticated()               // Все остальное с Basic Auth
     }
-
+            .httpBasic { }
+            .build()
 }
 ```
 
@@ -432,7 +428,7 @@ $ curl http://localhost:8000/manage/gateway/routes/dictionary | jq
 ## Запуск примера
 
 ```shell
-$ docker compose up -d
+$ docker compose up -d --wait
 $ ./gradlew clean build
 $ ./gradlew dictionary:bootRun --args='--spring.profiles.active=local'
 

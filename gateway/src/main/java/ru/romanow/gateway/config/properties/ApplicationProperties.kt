@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class ApplicationProperties(
     val routes: Routes,
     val retry: Retry,
+    val requestTimeout: Int,
     val rateLimiter: RateLimiter
 )
 
