@@ -17,5 +17,22 @@ services:
       - db-data:/var/lib/postgresql/data
       - ./postgres/:/docker-entrypoint-initdb.d/
 
+  dictionary:
+    build: dictionary/
+    image: romanowalex/dictionary:v1.0
+    container_name: dictionary
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/manage/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   db-data:

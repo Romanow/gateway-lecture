@@ -428,9 +428,9 @@ $ curl http://localhost:8000/manage/gateway/routes/dictionary | jq
 ## Запуск примера
 
 ```shell
+# запускает postgres и dictionary
 $ docker compose up -d --wait
-$ ./gradlew clean build
-$ ./gradlew dictionary:bootRun --args='--spring.profiles.active=local'
+$ ./gradlew gateway:bootRun --args='--spring.profiles.active=local'
 
 ```
 

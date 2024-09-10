@@ -6,4 +6,5 @@ application:
 
 logging:
   level:
+    WireMock: warn
     org.springframework.cloud.gateway.filter.factory.RetryGatewayFilterFactory: trace

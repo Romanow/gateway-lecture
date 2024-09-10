@@ -23,5 +23,5 @@ dependencies {
 }
 
 bootJar {
-    archiveFileName = "${rootProject.name}.jar"
+    archiveFileName = "${project.name}.jar"
 }

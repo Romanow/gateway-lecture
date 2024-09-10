@@ -1,9 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/dictionary
+    url: jdbc:postgresql://postgres:5432/dictionary
     username: program
     password: test
     driver-class-name: org.postgresql.Driver
   jpa:
-    generate-ddl: true
-    hibernate.ddl-auto: validate
+    hibernate.ddl-auto: none
