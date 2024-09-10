@@ -2,6 +2,7 @@ server:
   port: 8000
 
 application:
+  request-timeout: 1000
   retry:
     retry-count: 3
   rate-limiter:

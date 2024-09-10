@@ -31,3 +31,15 @@ management:
   health.diskspace.enabled: false
   endpoint.health.show-details: always
   info.git.mode: simple
+
+logbook:
+  predicate:
+    include:
+      - path: /api/**
+  format.style: http
+  filter.enabled: true
+  write.max-body-size: 255
+
+logging:
+  level:
+    org.zalando.logbook: trace

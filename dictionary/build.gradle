@@ -13,6 +13,7 @@ dependencies {
     implementation "org.liquibase:liquibase-core"
     implementation "org.postgresql:postgresql"
 
+    implementation "org.zalando:logbook-spring-boot-starter:$logbookVersion"
     implementation "org.springdoc:springdoc-openapi-starter-common:$openApiVersion"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$openApiVersion"
 
@@ -23,5 +24,5 @@ dependencies {
 }
 
 bootJar {
-    archiveFileName = "${project.name}.jar"
+    archiveFileName = "${project    .name}.jar"
 }
