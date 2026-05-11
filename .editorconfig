@@ -7,7 +7,7 @@ insert_final_newline = true
 indent_size = 4
 max_line_length = 120
 
-[*.{yml,yaml,json}]
+[*.{json,yml,yaml}]
 indent_size = 2
 
 [*.{kt,kts}]
@@ -25,3 +25,7 @@ ktlint_standard_multiline-expression-wrapping = disabled
 ktlint_standard_no-empty-first-line-in-class-body = disabled
 ktlint_standard_no-blank-line-in-list = disabled
 ktlint_standard_blank-line-before-declaration = disabled
+ktlint_standard_chain-method-continuation = disabled
+ktlint_standard_function-expression-body = disabled
+ktlint_standard_class-signature = disabled
+ktlint_function_signature_rule_force_multiline_when_parameter_count_greater_or_equal_than = 3

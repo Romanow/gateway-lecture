@@ -6,8 +6,9 @@ import ru.romanow.dictionary.domain.LegoSetEntity
 import ru.romanow.dictionary.models.LegoSet
 
 @Service
-class LegoSetService(repository: JpaRepository<LegoSetEntity, String>) :
-    BaseCrudService<String, LegoSetEntity, LegoSet>(repository) {
+class LegoSetService(
+    repository: JpaRepository<LegoSetEntity, String>
+) : BaseCrudService<String, LegoSetEntity, LegoSet>(repository) {
 
     override fun toModel(entity: LegoSetEntity) =
         LegoSet(

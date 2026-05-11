@@ -9,7 +9,9 @@ import ru.romanow.dictionary.services.SeriesService
 @Tag(name = "Lego Series")
 @RestController
 @RequestMapping("/api/v1/series")
-class SeriesController(seriesService: SeriesService) : BaseController<String, Series>(seriesService) {
+class SeriesController(
+    seriesService: SeriesService
+) : BaseController<String, Series>(seriesService) {
     override fun findById(id: String): Series {
         if (id == "Trains") {
             Thread.sleep(5000)

@@ -6,8 +6,9 @@ import ru.romanow.dictionary.domain.SeriesEntity
 import ru.romanow.dictionary.models.Series
 
 @Service
-class SeriesService(repository: JpaRepository<SeriesEntity, String>) :
-    BaseCrudService<String, SeriesEntity, Series>(repository) {
+class SeriesService(
+    repository: JpaRepository<SeriesEntity, String>
+) : BaseCrudService<String, SeriesEntity, Series>(repository) {
 
     override fun toModel(entity: SeriesEntity) =
         Series(

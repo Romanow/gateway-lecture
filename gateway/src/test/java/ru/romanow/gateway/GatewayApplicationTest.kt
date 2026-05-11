@@ -1,12 +1,7 @@
 package ru.romanow.gateway
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import com.maciejwalkowiak.wiremock.spring.ConfigureWireMock
-import com.maciejwalkowiak.wiremock.spring.EnableWireMock
-import com.maciejwalkowiak.wiremock.spring.InjectWireMock
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,6 +18,7 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.ServerWebExchangeDecorator
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
+import org.wiremock.spring.EnableWireMock
 import reactor.core.publisher.Mono
 import ru.romanow.gateway.models.LegoSet
 import ru.romanow.gateway.models.Series
@@ -31,12 +27,12 @@ import java.net.InetSocketAddress
 
 
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@EnableWireMock(value = [ConfigureWireMock(name = "dictionary", property = "application.routes.dictionary")])
+@SpringBootTest(
+    properties = ["application.routes.dictionary=http://localhost:\${wiremock.server.port}"],
+    webEnvironment = WebEnvironment.RANDOM_PORT
+)
+@EnableWireMock
 internal class GatewayApplicationTest {
-
-    @InjectWireMock("dictionary")
-    private lateinit var wiremock: WireMockServer
 
     @Autowired
     private lateinit var objectMapper: ObjectMapper
@@ -54,8 +50,8 @@ internal class GatewayApplicationTest {
             .build()
 
         val ferrari = buildLegoSet(FERRARI_NUMBER)
-        wiremock.stubFor(
-            WireMock.get("/api/v1/lego-sets")
+        stubFor(
+            get("/api/v1/lego-sets")
                 .willReturn(
                     aResponse()
                         .withBody(objectMapper.writeValueAsString(listOf(ferrari)))
@@ -63,8 +59,8 @@ internal class GatewayApplicationTest {
                         .withStatus(200)
                 )
         )
-        wiremock.stubFor(
-            WireMock.get("/api/v1/lego-sets/$FERRARI_NUMBER")
+        stubFor(
+            get("/api/v1/lego-sets/$FERRARI_NUMBER")
                 .willReturn(
                     aResponse()
                         .withBody(objectMapper.writeValueAsString(ferrari))
@@ -75,8 +71,8 @@ internal class GatewayApplicationTest {
 
         val technic = buildSeries(TECHNIC_SERIES, "TECHNIC")
         val trains = buildSeries(TRAINS_SERIES, "SYSTEM")
-        wiremock.stubFor(
-            WireMock.get("/api/v1/series")
+        stubFor(
+            get("/api/v1/series")
                 .willReturn(
                     aResponse()
                         .withBody(objectMapper.writeValueAsString(listOf(technic, trains)))
@@ -84,8 +80,8 @@ internal class GatewayApplicationTest {
                         .withStatus(200)
                 )
         )
-        wiremock.stubFor(
-            WireMock.get("/api/v1/series/$TECHNIC_SERIES")
+        stubFor(
+            get("/api/v1/series/$TECHNIC_SERIES")
                 .willReturn(
                     aResponse()
                         .withBody(objectMapper.writeValueAsString(technic))
@@ -93,8 +89,8 @@ internal class GatewayApplicationTest {
                         .withStatus(200)
                 )
         )
-        wiremock.stubFor(
-            WireMock.get("/api/v1/series/$TRAINS_SERIES")
+        stubFor(
+            get("/api/v1/series/$TRAINS_SERIES")
                 .willReturn(
                     aResponse()
                         .withFixedDelay(3000)

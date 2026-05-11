@@ -438,7 +438,3 @@ $ ./gradlew gateway:bootRun --args='--spring.profiles.active=local'
 
 1. [Spring Cloud Gateway](https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html)
 2. [Bucket4j Rate Limiter](https://github.com/bucket4j/bucket4j)
-
-## TODO
-
-1. Описать проблематику: какие сложности у нас будут без Gateway.

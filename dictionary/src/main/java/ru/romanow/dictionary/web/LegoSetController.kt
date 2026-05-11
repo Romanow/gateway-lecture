@@ -9,4 +9,6 @@ import ru.romanow.dictionary.services.LegoSetService
 @Tag(name = "Lego Sets")
 @RestController
 @RequestMapping("/api/v1/lego-sets")
-class LegoSetController(legoSetService: LegoSetService) : BaseController<String, LegoSet>(legoSetService)
+class LegoSetController(
+    legoSetService: LegoSetService
+) : BaseController<String, LegoSet>(legoSetService)
