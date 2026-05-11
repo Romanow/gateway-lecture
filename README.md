@@ -1,6 +1,6 @@
 # Как нам Spring Cloud Gateway жить помогает
 
-![Build Workflow](https://github.com/Romanow/gateway-lecture/workflows/Build%20project/badge.svg?branch=master)
+[![Build project](https://github.com/Romanow/gateway-lecture/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/Romanow/gateway-lecture/actions/workflows/build.yml)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 
 ## Аннотация

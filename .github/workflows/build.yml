@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - "src/**"
-      - "build.gradle"
 jobs:
   build:
     name: Build
@@ -16,7 +13,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: "corretto"
-          java-version: "17"
+          java-version: "21"
           cache: "gradle"
 
       - name: Validate

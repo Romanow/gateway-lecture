@@ -14,7 +14,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
       - ./postgres/:/docker-entrypoint-initdb.d/
 
   dictionary:
@@ -35,4 +35,4 @@ services:
         condition: service_healthy
 
 volumes:
-  db-data:
+  postgres:
