@@ -15,7 +15,7 @@ plugins {
 ext {
     springBootVersion = "3.5.8"
     springCloudVersion = "2025.0.2"
-    logbookVersion = "4.0.2"
+    logbookVersion = "4.0.4"
     openApiVersion = "2.8.15"
     bucket4jVersion = "7.6.1"
     postgresContainerVersion = "1.21.4"
