@@ -19,7 +19,7 @@ ext {
     openApiVersion = "2.8.15"
     bucket4jVersion = "7.6.1"
     postgresContainerVersion = "1.21.4"
-    wiremockSpringVersion = "4.0.8"
+    wiremockSpringVersion = "4.2.1"
 }
 
 allprojects {
