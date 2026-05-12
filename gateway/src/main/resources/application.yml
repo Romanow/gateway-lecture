@@ -17,17 +17,21 @@ spring:
   config:
     import: optional:git.properties
   cloud:
+    loadbalancer:
+      enabled: false
     gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: "*"
-            allowedMethods:
-              - GET
-              - POST
-              - PATCH
-              - PUT
-              - DELETE
+      server:
+        webflux:
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins: "*"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PATCH
+                  - PUT
+                  - DELETE
 
 management:
   endpoint:

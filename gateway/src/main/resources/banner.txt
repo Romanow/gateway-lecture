@@ -13,5 +13,7 @@ Built from branch: ${git.branch}
 Commit id: ${git.commit.id.abbrev}
 Commit time: ${git.commit.time}
 ==============================================================
+Load balancer: ${spring.cloud.loadbalancer.enabled}
+==============================================================
 Dictionary URL: ${application.routes.dictionary}
 ==============================================================

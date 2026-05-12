@@ -1,0 +1,13 @@
+image:
+  repository: romanowalex/gateway
+  tag: v1.0
+
+profile: k8s
+serviceAccountName: spring
+
+ports:
+  internal: 8000
+
+ingress:
+  enabled: true
+  domain: local

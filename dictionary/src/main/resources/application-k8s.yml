@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${DATABASE_HOST:postgres}:${DATABASE_PORT:5432}/${DATABASE_NAME:dictionary}
+    url: jdbc:postgresql://${DATABASE_HOST:postgres-service}:${DATABASE_PORT:5432}/${DATABASE_NAME:store}
     username: ${DATABASE_USER:program}
     password: ${DATABASE_PASSWORD:test}
     driver-class-name: org.postgresql.Driver

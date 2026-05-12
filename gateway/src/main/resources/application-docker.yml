@@ -1,0 +1,3 @@
+application:
+  routes:
+    dictionary: ${DICTIONARY_URL:http://dictionary:8080}

@@ -1,0 +1,7 @@
+users:
+  - name: program
+    password: test
+
+databases:
+  - name: dictionary
+    user: program
