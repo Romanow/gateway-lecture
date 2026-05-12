@@ -1,3 +1,4 @@
+---
 services:
   postgres:
     image: "postgres:15"
@@ -15,7 +16,7 @@ services:
       retries: 5
     volumes:
       - postgres:/var/lib/postgresql/data
-      - ./postgres/:/docker-entrypoint-initdb.d/
+      - ./docker/postgres/:/docker-entrypoint-initdb.d/
 
   dictionary:
     build: dictionary/
@@ -32,6 +33,23 @@ services:
       - "8080:8080"
     depends_on:
       postgres:
+        condition: service_healthy
+
+  gateway:
+    build: gateway/
+    image: romanowalex/gateway:v1.0
+    container_name: gateway
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8000/manage/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "8000:8000"
+    depends_on:
+      dictionary:
         condition: service_healthy
 
 volumes:

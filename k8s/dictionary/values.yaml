@@ -1,0 +1,15 @@
+image:
+  repository: romanowalex/dictionary
+  tag: v1.0
+
+profile: k8s
+
+ports:
+  internal: 8080
+
+database:
+  name: dictionary
+  host: postgres
+  port: 5432
+  username: program
+  password: test

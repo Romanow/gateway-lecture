@@ -1,0 +1,8 @@
+application:
+  routes:
+    dictionary: ${DICTIONARY_URL:lb://dictionary:8080}
+
+spring:
+  cloud:
+    loadbalancer:
+      enabled: true

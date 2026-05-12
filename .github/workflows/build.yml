@@ -1,8 +1,16 @@
-name: Build project
+---
+name: Build
 on:
   push:
     branches:
       - master
+    paths:
+      - .github/**
+      - docker-compose.yml
+      - gateway/**
+      - dictionary/**
+      - build.gradle
+      - gradle.properties
 jobs:
   build:
     name: Build
